@@ -1,0 +1,25 @@
+version: '3.5'
+
+services:
+  dataredis:
+    image: redis:alpine
+    container_name: "dataredis"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+    volumes:
+      - "./db/redis-data:/var/lib/redis"
+      - "./models/conf/redis.conf:/usr/local/etc/redis/redis.conf"
+    networks:
+      - node-net
+    ports:
+      - "6379:6379"
+    #command: redis-server
+    command: redis-server --requirepass sOmE_sEcUrE_pAsS
+
+networks:
+  node-net:
+    name: node-net
+  outlet-net:
+    name: outlet-net
+  outlet-backend-net:
+    name: outlet-backend-net
