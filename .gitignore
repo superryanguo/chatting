@@ -4,7 +4,12 @@
 *.dll
 *.so
 *.dylib
+*.swp
+*.swo
 
+website/website
+web-srv/web-srv
+db/*
 # Test binary, built with `go test -c`
 *.test
 
