@@ -5,7 +5,7 @@ import (
 
 	log "github.com/micro/go-micro/v2/logger"
 
-	brain "brain/proto/brain"
+	brain "github.com/superryanguo/chatting/brain/proto/brain"
 )
 
 type Brain struct{}

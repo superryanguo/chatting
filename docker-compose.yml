@@ -13,17 +13,13 @@ services:
       - node-net
     ports:
       - "6379:6379"
-    #command: redis-server
     command: redis-server --requirepass sOmE_sEcUrE_pAsS
 
   datamysql:
-    #image: "docker.io/mysql:latest"
     image: mysql:5.7
-    #network_mode: "host"
     restart: always
     container_name: "datamysql"
     environment:
-      #MYSQL_DATABASE: wordpress
       MYSQL_ROOT_PASSWORD: "yourpassword"
       MYSQL_USER: 'test'
       MYSQL_PASS: 'yourpassword'

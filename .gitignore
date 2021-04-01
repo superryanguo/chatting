@@ -9,6 +9,7 @@
 
 website/website
 web-srv/web-srv
+websrv/websrv
 brain/brain
 db/*
 # Test binary, built with `go test -c`

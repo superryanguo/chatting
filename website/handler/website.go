@@ -5,7 +5,7 @@ import (
 
 	log "github.com/micro/go-micro/v2/logger"
 
-	website "website/proto/website"
+	website "github.com/superryanguo/chatting/website/proto/website"
 )
 
 type Website struct{}

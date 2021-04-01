@@ -1,3 +1,0 @@
-app:
-  profiles:
-    include: redis, db, misc

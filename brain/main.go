@@ -1,12 +1,13 @@
 package main
 
 import (
-	log "github.com/micro/go-micro/v2/logger"
-	"github.com/micro/go-micro/v2"
-	"brain/handler"
-	"brain/subscriber"
+	"github.com/superryanguo/chatting/brain/handler"
+	"github.com/superryanguo/chatting/brain/subscriber"
 
-	brain "brain/proto/brain"
+	"github.com/micro/go-micro/v2"
+	log "github.com/micro/go-micro/v2/logger"
+
+	brain "github.com/superryanguo/chatting/brain/proto/brain"
 )
 
 func main() {

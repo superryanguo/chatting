@@ -1,0 +1,5 @@
+app:
+  misc:
+    imageaddr: 127.0.0.1 
+    mailuser: test
+    mailpass: testtrest
