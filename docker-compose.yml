@@ -16,6 +16,27 @@ services:
     #command: redis-server
     command: redis-server --requirepass sOmE_sEcUrE_pAsS
 
+  datamysql:
+    #image: "docker.io/mysql:latest"
+    image: mysql:5.7
+    #network_mode: "host"
+    restart: always
+    container_name: "datamysql"
+    environment:
+      #MYSQL_DATABASE: wordpress
+      MYSQL_ROOT_PASSWORD: "yourpassword"
+      MYSQL_USER: 'test'
+      MYSQL_PASS: 'yourpassword'
+    volumes:
+      - "./db/mysql:/var/lib/mysql"
+      - "./models/conf/my.cnf:/etc/my.cnf"
+      - "./models/init:/docker-entrypoint-initdb.d/"
+      - "./models/testdata:/home"
+    networks:
+      - node-net
+    ports:
+      - "3306:3306"
+
 networks:
   node-net:
     name: node-net

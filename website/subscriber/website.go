@@ -2,20 +2,19 @@ package subscriber
 
 import (
 	"context"
-
 	log "github.com/micro/go-micro/v2/logger"
 
-	web "web-srv/proto/web"
+	website "website/proto/website"
 )
 
-type Web struct{}
+type Website struct{}
 
-func (e *Web) Handle(ctx context.Context, msg *web.Message) error {
+func (e *Website) Handle(ctx context.Context, msg *website.Message) error {
 	log.Info("Handler Received message: ", msg.Say)
 	return nil
 }
 
-func Handler(ctx context.Context, msg *web.Message) error {
+func Handler(ctx context.Context, msg *website.Message) error {
 	log.Info("Function Received message: ", msg.Say)
 	return nil
 }

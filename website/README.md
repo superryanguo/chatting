@@ -1,11 +1,11 @@
-# Brain Service
+# Website Service
 
-This is the Brain service
+This is the Website service
 
 Generated with
 
 ```
-micro new brain --namespace=micro.chatting --type=service
+micro new website --namespace=go.micro --type=service
 ```
 
 ## Getting Started
@@ -16,9 +16,9 @@ micro new brain --namespace=micro.chatting --type=service
 
 ## Configuration
 
-- FQDN: micro.chatting.service.brain
+- FQDN: go.micro.service.website
 - Type: service
-- Alias: brain
+- Alias: website
 
 ## Dependencies
 
@@ -46,7 +46,7 @@ make build
 
 Run the service
 ```
-./brain-service
+./website-service
 ```
 
 Build a docker image
