@@ -1,29 +1,46 @@
 package main
 
 import (
-	"github.com/micro/go-micro/v2"
-	log "github.com/micro/go-micro/v2/logger"
-	"github.com/superryanguo/chatting/website/handler"
-	"github.com/superryanguo/chatting/website/subscriber"
+	"net/http"
 
-	website "github.com/superryanguo/chatting/website/proto/website"
+	"github.com/julienschmidt/httprouter"
+	"github.com/micro/cli/v2"
+	log "github.com/micro/go-micro/v2/logger"
+	"github.com/micro/go-micro/v2/web"
+	"github.com/superryanguo/chatting/website/handler"
+	//"github.com/superryanguo/chatting/basic"
+	//"github.com/superryanguo/chatting/models"
+)
+
+const (
+	webPort = ":8083"
 )
 
 func main() {
-	// New Service
-	service := micro.NewService(
-		micro.Name("go.micro.service.website"),
-		micro.Version("latest"),
+	//basic.Init()
+	//models.Init()
+
+	service := web.NewService(
+		web.Name("go.micro.service.website"),
+		web.Version("latest"),
+		web.Address(webPort),
 	)
-
 	// Initialise service
-	service.Init()
+	if err := service.Init(
+		web.Action(
+			func(c *cli.Context) {
+				handler.Init()
+			}),
+	); err != nil {
+		log.Fatal(err)
+	}
 
+	rou := httprouter.New()
+	rou.NotFound = http.FileServer(http.Dir("html"))
+	rou.GET("/api/v1.0/lightning/house/index", handler.GetIndex)
+	service.Handle("/", rou)
 	// Register Handler
-	website.RegisterWebsiteHandler(service.Server(), new(handler.Website))
-
-	// Register Struct as Subscriber
-	micro.RegisterSubscriber("go.micro.service.website", service.Server(), new(subscriber.Website))
+	//website.RegisterWebsiteHandler(service.Server(), new(handler.Website))
 
 	// Run service
 	if err := service.Run(); err != nil {

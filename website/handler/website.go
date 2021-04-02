@@ -2,13 +2,37 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
+	"net/http"
 
+	"github.com/julienschmidt/httprouter"
 	log "github.com/micro/go-micro/v2/logger"
 
+	"github.com/superryanguo/chatting/utils"
 	website "github.com/superryanguo/chatting/website/proto/website"
 )
 
 type Website struct{}
+
+func Init() {
+	//userClient = user.NewUserSrvService("micro.super.chatting.service.user_srv", client.DefaultClient)
+}
+
+func GetIndex(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	log.Info("GetInded-> html show api/v1.0/chatting/house/index")
+
+	response := map[string]interface{}{
+		"errno":  utils.RECODE_OK,
+		"errmsg": utils.RecodeText(utils.RECODE_OK),
+	}
+	w.Header().Set("Content-Type", "application/json")
+
+	// encode and write the response as json
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+}
 
 // Call is a single request handler called via client.Call or the generated client code
 func (e *Website) Call(ctx context.Context, req *website.Request, rsp *website.Response) error {
