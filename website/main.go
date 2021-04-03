@@ -7,8 +7,8 @@ import (
 	"github.com/micro/cli/v2"
 	log "github.com/micro/go-micro/v2/logger"
 	"github.com/micro/go-micro/v2/web"
+	"github.com/superryanguo/chatting/basic"
 	"github.com/superryanguo/chatting/website/handler"
-	//"github.com/superryanguo/chatting/basic"
 	//"github.com/superryanguo/chatting/models"
 )
 
@@ -17,7 +17,7 @@ const (
 )
 
 func main() {
-	//basic.Init()
+	basic.Init()
 	//models.Init()
 
 	service := web.NewService(
