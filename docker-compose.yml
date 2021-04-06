@@ -1,9 +1,9 @@
 version: '3.5'
 
 services:
-  dataredis:
+  dtredis:
     image: redis:alpine
-    container_name: "dataredis"
+    container_name: "dtredis"
     environment:
       - REDIS_REPLICATION_MODE=master
     volumes:
@@ -15,10 +15,10 @@ services:
       - "6379:6379"
     command: redis-server --requirepass sOmE_sEcUrE_pAsS
 
-  datamysql:
+  dtmysql:
     image: mysql:5.7
     restart: always
-    container_name: "datamysql"
+    container_name: "dtmysql"
     environment:
       MYSQL_ROOT_PASSWORD: "yourpassword"
       MYSQL_USER: 'test'
