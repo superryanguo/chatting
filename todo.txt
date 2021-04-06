@@ -1,4 +1,4 @@
-1. DB model and mysql
+1. DB model and mysql -- done
 2. session managerment can wait?
 3. AI model program and python docker service
 4. websocket for chatting
