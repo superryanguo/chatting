@@ -2,10 +2,8 @@ app:
   mysql:
     enabled: true
     migrate: true
-    #url: root:123@(127.0.0.1:3306)/micro_book_mall?charset=utf8&parseTime=true&loc=Asia%2FShanghai
-    #url: root:yourpassword@(127.0.0.1:3306)/micro_db
     url: 127.0.0.1:3306
-    dbname: micro_db
+    dbname: chat_db
     name: root
     psw: yourpassword
     maxIdleConnection: 100
