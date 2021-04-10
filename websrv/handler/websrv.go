@@ -5,10 +5,19 @@ import (
 
 	log "github.com/micro/go-micro/v2/logger"
 
+	"github.com/superryanguo/chatting/utils"
 	websrv "github.com/superryanguo/chatting/websrv/proto/websrv"
 )
 
 type Websrv struct{}
+
+func (e *Websrv) Chat(ctx context.Context, req *websrv.ChatRequest, rsp *websrv.ChatResponse) error {
+	log.Info("Websrv->Chat func in...")
+	rsp.Errno = utils.RECODE_OK
+	rsp.Errmsg = utils.RecodeText(rsp.Errno)
+	rsp.Reply = "hardcode reply..."
+	return nil
+}
 
 // Call is a single request handler called via client.Call or the generated client code
 func (e *Websrv) Call(ctx context.Context, req *websrv.Request, rsp *websrv.Response) error {

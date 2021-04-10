@@ -42,6 +42,7 @@ func NewWebsrvEndpoints() []*api.Endpoint {
 // Client API for Websrv service
 
 type WebsrvService interface {
+	Chat(ctx context.Context, in *ChatRequest, opts ...client.CallOption) (*ChatResponse, error)
 	Call(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
 	Stream(ctx context.Context, in *StreamingRequest, opts ...client.CallOption) (Websrv_StreamService, error)
 	PingPong(ctx context.Context, opts ...client.CallOption) (Websrv_PingPongService, error)
@@ -57,6 +58,16 @@ func NewWebsrvService(name string, c client.Client) WebsrvService {
 		c:    c,
 		name: name,
 	}
+}
+
+func (c *websrvService) Chat(ctx context.Context, in *ChatRequest, opts ...client.CallOption) (*ChatResponse, error) {
+	req := c.c.NewRequest(c.name, "Websrv.Chat", in)
+	out := new(ChatResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *websrvService) Call(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error) {
@@ -172,6 +183,7 @@ func (x *websrvServicePingPong) Recv() (*Pong, error) {
 // Server API for Websrv service
 
 type WebsrvHandler interface {
+	Chat(context.Context, *ChatRequest, *ChatResponse) error
 	Call(context.Context, *Request, *Response) error
 	Stream(context.Context, *StreamingRequest, Websrv_StreamStream) error
 	PingPong(context.Context, Websrv_PingPongStream) error
@@ -179,6 +191,7 @@ type WebsrvHandler interface {
 
 func RegisterWebsrvHandler(s server.Server, hdlr WebsrvHandler, opts ...server.HandlerOption) error {
 	type websrv interface {
+		Chat(ctx context.Context, in *ChatRequest, out *ChatResponse) error
 		Call(ctx context.Context, in *Request, out *Response) error
 		Stream(ctx context.Context, stream server.Stream) error
 		PingPong(ctx context.Context, stream server.Stream) error
@@ -192,6 +205,10 @@ func RegisterWebsrvHandler(s server.Server, hdlr WebsrvHandler, opts ...server.H
 
 type websrvHandler struct {
 	WebsrvHandler
+}
+
+func (h *websrvHandler) Chat(ctx context.Context, in *ChatRequest, out *ChatResponse) error {
+	return h.WebsrvHandler.Chat(ctx, in, out)
 }
 
 func (h *websrvHandler) Call(ctx context.Context, in *Request, out *Response) error {

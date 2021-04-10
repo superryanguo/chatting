@@ -3,9 +3,21 @@ syntax = "proto3";
 package micro.chatting.service.websrv;
 
 service Websrv {
+  rpc Chat(ChatRequest) returns (ChatResponse) {}
 	rpc Call(Request) returns (Response) {}
 	rpc Stream(StreamingRequest) returns (stream StreamingResponse) {}
 	rpc PingPong(stream Ping) returns (stream Pong) {}
+}
+
+message ChatRequest {
+    string SessionId = 1;
+    string Text = 2;
+}
+
+message ChatResponse {
+    string Errno = 1;
+    string Errmsg = 2;
+    string Reply = 3;
 }
 
 message Message {

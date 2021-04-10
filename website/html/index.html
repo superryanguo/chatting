@@ -102,13 +102,17 @@
 
             url = "/api/v1.0/chat?cmsg="+encodeURIComponent(textContent)
             $.ajax({
-            type:"GET",
             url:url,
+            type:"GET",
+            <!--contentType: "application/json",-->
             timeout : 10000,
-            // dataType:"html",
-            success:function(result){
-                // alert(result)
-                getMessage(result);
+            data: JSON.stringify(req),
+            headers: {
+                "X-CSRFToken": getCookie("csrf_token")
+            },
+            dataType: "json",
+            success:function(resp){
+                getMessage(resp.data.reply);
             },
             error:function(jqXHR){
                 console.log("Error: "+jqXHR.status);
@@ -118,12 +122,12 @@
         }
     }
 
-    function getMessage(result){
+    function getMessage(reply){
         var textContent = $(".div-textarea").html().replace(/[\n\r]/g, '<br>')
         $(".chatBox-content-demo").append("<div class=\"clearfloat\">" +
             "<div class=\"author-name\"><small class=\"chat-date\">"+getTime()+"</small> </div> " +
             "<div class=\"left\"> <div class=\"chat-avatars\"><img src=\"img/icon01.png\" alt=\"头像\" /></div>" +
-            "<div class=\"chat-message\"> " + result + " </div>  </div> </div>");
+            "<div class=\"chat-message\"> " + reply + " </div>  </div> </div>");
         $(".div-textarea").html("");
         $(document).ready(function () {
             $("#chatBox-content-demo").scrollTop($("#chatBox-content-demo")[0].scrollHeight);
