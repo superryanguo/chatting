@@ -1,100 +1,155 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <title>Chat Example</title>
-    <script type="text/javascript">
-        window.onload = function () {
-            let conn;
-            let msg = document.getElementById("msg");
-            let log = document.getElementById("log");
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>ChatBot Beta v1.0</title>
+<link rel="stylesheet" type="text/css" href="font_Icon/iconfont.css">
+<link rel="stylesheet" type="text/css" href="css/chat.css">
 
-            function appendLog(item) {
-                let doScroll = log.scrollTop > log.scrollHeight - log.clientHeight - 1;
-                log.appendChild(item);
-                if (doScroll) {
-                    log.scrollTop = log.scrollHeight - log.clientHeight;
-                }
-            }
-
-            document.getElementById("form").onsubmit = function () {
-                if (!conn) {
-                    return false;
-                }
-                if (!msg.value) {
-                    return false;
-                }
-                conn.send(msg.value);
-                msg.value = "";
-                return false;
-            };
-
-            if (window["WebSocket"]) {
-                const params = window.location.href.split("/");
-                const roomId = params[params.length - 1];
-                conn = new WebSocket("ws://" + document.location.host + "/ws/" + roomId);
-                conn.onclose = function (evt) {
-                    let item = document.createElement("div");
-                    item.innerHTML = "<b>Connection closed.</b>";
-                    appendLog(item);
-                };
-                conn.onmessage = function (evt) {
-                    let messages = evt.data.split('\n');
-                    for (let i = 0; i < messages.length; i++) {
-                        let item = document.createElement("div");
-                        item.innerText = messages[i];
-                        appendLog(item);
-                    }
-                };
-            } else {
-                let item = document.createElement("div");
-                item.innerHTML = "<b>Your browser does not support WebSockets.</b>";
-                appendLog(item);
-            }
-        };
-    </script>
-    <style type="text/css">
-        html {
-            overflow: hidden;
-        }
-
-        body {
-            overflow: hidden;
-            padding: 0;
-            margin: 0;
-            width: 100%;
-            height: 100%;
-            background: gray;
-        }
-
-        #log {
-            background: white;
-            margin: 0;
-            padding: 0.5em 0.5em 0.5em 0.5em;
-            position: absolute;
-            top: 0.5em;
-            left: 0.5em;
-            right: 0.5em;
-            bottom: 3em;
-            overflow: auto;
-        }
-
-        #form {
-            padding: 0 0.5em 0 0.5em;
-            margin: 0;
-            position: absolute;
-            bottom: 1em;
-            left: 0px;
-            width: 100%;
-            overflow: hidden;
-        }
-
-    </style>
 </head>
 <body>
-<div id="log"></div>
-<form id="form">
-    <input type="text" id="msg" size="64" autofocus/>
-    <input type="submit" value="Send"/>
-</form>
+
+<div class="chatContainer">
+    <div class="chatBox" ref="chatBox">
+        <div class="chatBox-head">
+            <div class="chatBox-head-one">
+                ChatBot^_^
+            </div>
+        </div>
+        <div class="chatBox-info">
+            <div class="chatBox-kuang" ref="chatBoxkuang" style="height: 495px; display: block;">
+                <div class="chatBox-content">
+                    <div class="chatBox-content-demo" id="chatBox-content-demo">
+
+                        <div class="clearfloat">
+                            <div class="left">
+                                <div class="chat-avatars"><img src="img/icon01.png" alt="头像"></div>
+                                <div class="chat-message">
+                                    Hi, Nice to meet you! Let's chat...
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="chatBox-send">
+                    <div class="div-textarea" contenteditable="true"></div>
+                    <div>
+                        <button id="chat-fasong" class="btn-default-styles"><i class="iconfont icon-fasong"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="js/jquery.min.js"></script>
+<script>
+
+    screenFuc();
+    function screenFuc() {
+        var topHeight = $(".chatBox-head").innerHeight();
+        var winWidth = $(window).innerWidth();
+        if (winWidth <= 768) {
+            var totalHeight = $(window).height();
+            $(".chatBox-info").css("height", totalHeight - topHeight);
+            var infoHeight = $(".chatBox-info").innerHeight();
+            $(".chatBox-content").css("height", infoHeight - 46);
+            $(".chatBox-content-demo").css("height", infoHeight - 46);
+
+            $(".chatBox-list").css("height", totalHeight - topHeight);
+            $(".chatBox-kuang").css("height", totalHeight - topHeight);
+            $(".div-textarea").css("width", winWidth - 42);
+        } else {
+            $(".chatBox-info").css("height", 525);
+            $(".chatBox-content").css("height", 448);
+            $(".chatBox-content-demo").css("height", 478);
+            $(".chatBox-list").css("height", 495);
+            $(".chatBox-kuang").css("height", 495);
+            $(".div-textarea").css("width", 328);
+        }
+    }
+    (window.onresize = function () {
+        screenFuc();
+    })();
+
+    $(".div-textarea").keydown(function(event){
+        if(event.keyCode ==13){
+            sendMessage();
+            return false;
+        }
+    });
+
+    $("#chat-fasong").click(function () {
+        sendMessage();
+    });
+
+    function sendMessage(){
+        var textContent = $(".div-textarea").html().replace(/[\n\r]/g, '<br>')
+        if (textContent != "") {
+            $(".chatBox-content-demo").append("<div class=\"clearfloat\">" +
+                "<div class=\"author-name\"><small class=\"chat-date\">"+getTime()+"</small> </div> " +
+                "<div class=\"right\"> <div class=\"chat-message\"> " + textContent + " </div> " +
+                "<div class=\"chat-avatars\"><img src=\"img/icon02.png\" alt=\"头像\" /></div> </div> </div>");
+            $(".div-textarea").html("");
+            $(document).ready(function () {
+                $("#chatBox-content-demo").scrollTop($("#chatBox-content-demo")[0].scrollHeight);
+            });
+
+            url = "/api/chat?message="+encodeURIComponent(textContent)
+            $.ajax({
+            type:"GET",
+            url:url,
+            timeout : 10000,
+            // dataType:"html",
+            success:function(result){
+                // alert(result)
+                getMessage(result);
+            },
+            error:function(jqXHR){
+                console.log("Error: "+jqXHR.status);
+            }
+        });
+            
+        }
+    }
+
+    function getMessage(result){
+        var textContent = $(".div-textarea").html().replace(/[\n\r]/g, '<br>')
+        $(".chatBox-content-demo").append("<div class=\"clearfloat\">" +
+            "<div class=\"author-name\"><small class=\"chat-date\">"+getTime()+"</small> </div> " +
+            "<div class=\"left\"> <div class=\"chat-avatars\"><img src=\"img/icon01.png\" alt=\"头像\" /></div>" +
+            "<div class=\"chat-message\"> " + result + " </div>  </div> </div>");
+        $(".div-textarea").html("");
+        $(document).ready(function () {
+            $("#chatBox-content-demo").scrollTop($("#chatBox-content-demo")[0].scrollHeight);
+        });
+    }
+
+    function getTime() {
+    var date = new Date();
+    var seperator1 = "-";
+    var seperator2 = ":";
+    var month = date.getMonth() + 1;
+    var strDate = date.getDate();
+    if (month >= 1 && month <= 9) {
+        month = "0" + month;
+    }
+    if (strDate >= 0 && strDate <= 9) {
+        strDate = "0" + strDate;
+    }
+    var currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate
+            + " " + date.getHours() + seperator2 + date.getMinutes()
+            + seperator2 + date.getSeconds();
+    return currentdate;
+}
+
+</script>
+
 </body>
 </html>
+
