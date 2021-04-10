@@ -100,7 +100,7 @@
                 $("#chatBox-content-demo").scrollTop($("#chatBox-content-demo")[0].scrollHeight);
             });
 
-            url = "/api/chat?message="+encodeURIComponent(textContent)
+            url = "/api/v1.0/chat?cmsg="+encodeURIComponent(textContent)
             $.ajax({
             type:"GET",
             url:url,

@@ -20,18 +20,18 @@ func Init() {
 
 func GetChatMsg(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	log.Info("GetChatMsg-> Chatting message in")
-	log.Debugf("httpRequest=%v", r)
-	keys, ok := r.URL.Query()["message"]
+	//log.Debugf("httpRequest=%v", r)
+	keys, ok := r.URL.Query()["cmsg"]
 
 	if !ok || len(keys[0]) < 1 {
-		log.Info("Url Param 'message' is missing")
+		log.Info("Url Param 'cmsg' is missing")
 		return
 	}
 
 	// Query()["key"] will return an array of items,
 	// we only want the single item.
 	key := keys[0]
-	log.Info("GetChatMessage=" + string(key))
+	log.Info("cmsg=" + string(key))
 }
 
 func GetIndex(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
