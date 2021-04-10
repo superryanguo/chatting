@@ -38,6 +38,7 @@ func main() {
 	rou := httprouter.New()
 	rou.NotFound = http.FileServer(http.Dir("html"))
 	rou.GET("/api/v1.0/lightning/house/index", handler.GetIndex)
+	rou.GET("/api/v1.0/chat", handler.GetChatMsg)
 	service.Handle("/", rou)
 	// Register Handler
 	//website.RegisterWebsiteHandler(service.Server(), new(handler.Website))

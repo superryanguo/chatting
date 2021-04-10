@@ -18,8 +18,24 @@ func Init() {
 	//userClient = user.NewUserSrvService("micro.super.chatting.service.user_srv", client.DefaultClient)
 }
 
+func GetChatMsg(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	log.Info("GetChatMsg-> Chatting message in")
+	log.Debugf("httpRequest=%v", r)
+	keys, ok := r.URL.Query()["message"]
+
+	if !ok || len(keys[0]) < 1 {
+		log.Info("Url Param 'message' is missing")
+		return
+	}
+
+	// Query()["key"] will return an array of items,
+	// we only want the single item.
+	key := keys[0]
+	log.Info("GetChatMessage=" + string(key))
+}
+
 func GetIndex(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	log.Info("GetInded-> html show api/v1.0/chatting/house/index")
+	log.Info("GetIndex-> html show api/v1.0/chatting/house/index")
 
 	response := map[string]interface{}{
 		"errno":  utils.RECODE_OK,
