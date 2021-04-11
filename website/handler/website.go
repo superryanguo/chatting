@@ -53,21 +53,15 @@ func GetChatMsg(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	// Query()["key"] will return an array of items,
 	// we only want the single item.
 	key := keys[0]
-	log.Info("cmsg=" + string(key))
+	log.Debug("cmsg=" + string(key))
 
-	var request map[string]interface{}
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	log.Debug("request[cmsg]=" + request["cmsg"].(string))
 	rsp, err := webClient.Chat(context.TODO(), &websrv.ChatRequest{
-		SessionId: "",                       //TODO: set it later
-		Text:      request["cmsg"].(string), //TODO: work?
+		SessionId: "12123", //TODO: set it later
+		Text:      string(key),
 	})
 
 	if err != nil {
+		log.Debug("websrv calling error! ", err.Error())
 		http.Error(w, err.Error(), 502)
 		return
 	}
@@ -82,7 +76,7 @@ func GetChatMsg(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
 		http.Error(w, err.Error(), 503)
-		log.Info(err)
+		log.Debug("json calling error! ", err.Error())
 		return
 	}
 	return

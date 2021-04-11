@@ -106,9 +106,10 @@
             type:"GET",
             <!--contentType: "application/json",-->
             timeout : 10000,
-            data: JSON.stringify(req),
+            <!--data: JSON.stringify(req),-->
             headers: {
-                "X-CSRFToken": getCookie("csrf_token")
+                <!--"X-CSRFToken": getCookie("csrf_token")-->
+                "X-CSRFToken": "111111111"
             },
             dataType: "json",
             success:function(resp){

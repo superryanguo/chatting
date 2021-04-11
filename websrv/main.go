@@ -10,6 +10,9 @@ import (
 )
 
 func main() {
+	//basic.Init()
+	//models.Init()
+	//handler.Init()
 	// New Service
 	service := micro.NewService(
 		micro.Name("micro.chatting.service.websrv"),
