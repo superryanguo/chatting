@@ -15,7 +15,7 @@ func (e *Websrv) Chat(ctx context.Context, req *websrv.ChatRequest, rsp *websrv.
 	log.Info("Websrv->Chat func in...")
 	rsp.Errno = utils.RECODE_OK
 	rsp.Errmsg = utils.RecodeText(rsp.Errno)
-	rsp.Reply = "hardcode reply..."
+	rsp.Reply = "hardcode reply for ses"+req.SessionId
 	return nil
 }
 

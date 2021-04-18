@@ -5,10 +5,13 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/google/uuid"
+
 	"github.com/julienschmidt/httprouter"
 	"github.com/micro/go-micro/v2/client"
 	log "github.com/micro/go-micro/v2/logger"
 
+	"github.com/superryanguo/chatting/utils/psession"
 	website "github.com/superryanguo/chatting/website/proto/website"
 	websrv "github.com/superryanguo/chatting/websrv/proto/websrv"
 )
@@ -23,6 +26,20 @@ func Init() {
 	webClient = websrv.NewWebsrvService("micro.chatting.service.websrv", client.DefaultClient)
 }
 
+func GetSession(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	log.Info("GetSession-> /api/v1.0/session in")
+	//check the session id to see the first connect
+	ses, _ := psession.GetSession(w, r)
+		log.Debug("ses.ID=", ses.ID)
+	if ses.ID == "" {
+		sesId := uuid.New().String()
+		session.Values[psession.CesKey] = sesId
+		log.Debug("New Session generate the csess id=", sesId)
+		ses.Save(r, w)
+	} else {
+		log.Debug("resue pre-session id=", session.Values[psession.CesKey].(string))
+	}
+}
 func GetChatMsg(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	log.Info("GetChatMsg-> Chatting message in")
 	//log.Debugf("httpRequest=%v", r)
@@ -55,8 +72,19 @@ func GetChatMsg(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	key := keys[0]
 	log.Debug("cmsg=" + string(key))
 
+	ses, _ := psession.GetSession(w, r)
+		log.Debug("ses.ID=", ses.ID)
+	if ses.ID == "" {
+		sesId := uuid.New().String()
+		session.Values[psession.CesKey] = sesId
+		log.Debug("New Session generate the csess id=", sesId)
+		ses.Save(r, w)
+	} else {
+		log.Debug("resue pre-session id=", session.Values[psession.CesKey].(string))
+	}
+
 	rsp, err := webClient.Chat(context.TODO(), &websrv.ChatRequest{
-		SessionId: "12123", //TODO: set it later
+		SessionId: session.Values[psession.CesKey].(string),
 		Text:      string(key),
 	})
 

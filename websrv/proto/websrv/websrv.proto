@@ -3,7 +3,7 @@ syntax = "proto3";
 package micro.chatting.service.websrv;
 
 service Websrv {
-  rpc Chat(ChatRequest) returns (ChatResponse) {}
+    rpc Chat(ChatRequest) returns (ChatResponse) {}
 	rpc Call(Request) returns (Response) {}
 	rpc Stream(StreamingRequest) returns (stream StreamingResponse) {}
 	rpc PingPong(stream Ping) returns (stream Pong) {}

@@ -10,7 +10,30 @@
 
 </head>
 <body>
+        <div class="top-bar">
+            <img class="logo fl" src="./favicon.ico">
+            <div class="register-login fr">
+                <a class="btn top-btn btn-theme" href="./register.html" style="float:right">注册</a>
+                <a class="btn top-btn btn-theme" href="./login.html" style="float:right">登录</a>
+            </div>
+            <div class="user-info fr"><span><i class="fa fa-user fa-lg"></i></span> <a class="user-name" href="/my.html"></a></div>
+        </div>
+        <script>
+                document.onreadystatechange = function () {
+                    if(document.readyState=="interactive"){
+                        $(".progressbar").fadeOut();
+                            $.get("/api/v1.0/session", function (resp) {
+                                if ("0" == resp.errno) {
+                                    $(".top-bar>.user-info>.user-name").html(resp.data.name);
+                                    $(".top-bar>.user-info").show();
 
+                                } else {
+                                    $(".top-bar>.register-login").show();
+                                }
+                            }, "json");
+                    }
+                }
+        </script>
 <div class="chatContainer">
     <div class="chatBox" ref="chatBox">
         <div class="chatBox-head">
@@ -119,7 +142,7 @@
                 console.log("Error: "+jqXHR.status);
             }
         });
-            
+
         }
     }
 

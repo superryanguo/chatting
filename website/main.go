@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/micro/cli/v2"
+	"github.com/micro/cli"
 	log "github.com/micro/go-micro/v2/logger"
 	"github.com/micro/go-micro/v2/web"
 	"github.com/superryanguo/chatting/basic"
@@ -38,6 +38,7 @@ func main() {
 	rou := httprouter.New()
 	rou.NotFound = http.FileServer(http.Dir("html"))
 	rou.GET("/api/v1.0/chat", handler.GetChatMsg)
+	rou.GET("/api/v1.0/session", handler.GetSession)
 	service.Handle("/", rou)
 	// Register Handler
 	//website.RegisterWebsiteHandler(service.Server(), new(handler.Website))
