@@ -5,13 +5,12 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/google/uuid"
-
 	"github.com/julienschmidt/httprouter"
 	"github.com/micro/go-micro/v2/client"
 	log "github.com/micro/go-micro/v2/logger"
 
-	"github.com/superryanguo/chatting/utils/psession"
+	"github.com/superryanguo/chatting/plugins/psession"
+	"github.com/superryanguo/chatting/utils"
 	website "github.com/superryanguo/chatting/website/proto/website"
 	websrv "github.com/superryanguo/chatting/websrv/proto/websrv"
 )
@@ -28,16 +27,25 @@ func Init() {
 
 func GetSession(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	log.Info("GetSession-> /api/v1.0/session in")
-	//check the session id to see the first connect
-	ses, _ := psession.GetSession(w, r)
-		log.Debug("ses.ID=", ses.ID)
-	if ses.ID == "" {
-		sesId := uuid.New().String()
-		session.Values[psession.CesKey] = sesId
-		log.Debug("New Session generate the csess id=", sesId)
-		ses.Save(r, w)
-	} else {
-		log.Debug("resue pre-session id=", session.Values[psession.CesKey].(string))
+	ses, err := psession.GetSession(w, r)
+	if err != nil {
+		log.Info("Error! no session could be allocated!", err.Error())
+		http.Error(w, err.Error(), 502) //TODO: make it like the response in w?
+		return
+	}
+	log.Debug("CtsKey=", ses.Values[psession.CtsKey].(string), "+ses.ID=", ses.ID)
+	data := make(map[string]string)
+	data["name"] = ses.Values[psession.CtsKey].(string)[:8]
+	response := map[string]interface{}{
+		"errno":  utils.RECODE_OK,
+		"errmsg": utils.RecodeText(utils.RECODE_OK),
+		"data":   data,
+	}
+	w.Header().Set("Content-Type", "application/json")
+
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		http.Error(w, err.Error(), 500)
+		return
 	}
 }
 func GetChatMsg(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
@@ -72,19 +80,16 @@ func GetChatMsg(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	key := keys[0]
 	log.Debug("cmsg=" + string(key))
 
-	ses, _ := psession.GetSession(w, r)
-		log.Debug("ses.ID=", ses.ID)
-	if ses.ID == "" {
-		sesId := uuid.New().String()
-		session.Values[psession.CesKey] = sesId
-		log.Debug("New Session generate the csess id=", sesId)
-		ses.Save(r, w)
-	} else {
-		log.Debug("resue pre-session id=", session.Values[psession.CesKey].(string))
+	ses, err := psession.GetSession(w, r)
+	if err != nil {
+		log.Info("Error! no session could be allocated!", err.Error())
+		http.Error(w, err.Error(), 502)
+		return
 	}
+	log.Debug("CtsKey=", ses.Values[psession.CtsKey].(string), "+ses.ID=", ses.ID)
 
 	rsp, err := webClient.Chat(context.TODO(), &websrv.ChatRequest{
-		SessionId: session.Values[psession.CesKey].(string),
+		SessionId: ses.Values[psession.CtsKey].(string),
 		Text:      string(key),
 	})
 

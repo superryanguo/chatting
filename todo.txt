@@ -1,4 +1,6 @@
 1. DB model and mysql -- done
-2. session managerment can wait?
+2. session managerment can wait? --done
 3. AI model program and python docker service*--just comment the train function can work?
 4. websocket for chatting*--first can use the luo's html, then upgrade to a websocket is an option
+5. change the avastar during the dialog
+6. session id show on the web page and only the first 5 bit?
