@@ -17,22 +17,26 @@ var (
 	m      sync.RWMutex
 )
 
+const (
+	Userid = 11111111
+)
+
 type User struct {
-	Uid           string `gorm:"primary_key;size:256" json:"user_id"`
-	Name          string `gorm:"size:50"  json:"name"`
-	Password_hash string `gorm:"size:256" json:"password"`
-	Email         string `gorm:"size:50;unique"  json:"email"`
-	Real_name     string `gorm:"size:32" json:"real_name"`
-	Id_card       string `gorm:"size:20" json:"id_card"`
-	Avatar_url    string `gorm:"size:256" json:"avatar_url"`
+	ID           int
+	Name         string `gorm:"size:50"  json:"name"`
+	PasswordHash string `gorm:"size:256" json:"password"`
+	Email        string `gorm:"size:50;unique"  json:"email"`
+	RealName     string `gorm:"size:32" json:"real_name"`
+	IdCard       string `gorm:"size:20" json:"id_card"`
+	AvatarUrl    string `gorm:"size:256" json:"avatar_url"`
+	Dialogs      []Dialog
 }
 
-type Talklog struct {
-	//gorm.Model
-	ID      int    `json:"talklog_id"`
-	UserID  uint   `json:"user_id"`
-	Title   string `gorm:"size:64" json:"title"`
-	Datalog string `json:"datalog"`
+type Dialog struct {
+	//ID        int    `json:"dialog_id"`
+	SessionId string `gorm:"size:256" json:"session_id"`
+	UserID    int    `json:"user_id"`
+	Path      string `json:"path"`
 }
 
 func Init() {
@@ -73,7 +77,7 @@ func Init() {
 func DataTableInit(db *gorm.DB) {
 	log.Debug("gorm automigrate database and init the areas data")
 
-	db.AutoMigrate(&User{}, &Talklog{})
+	db.AutoMigrate(&User{}, &Dialog{})
 
 }
 

@@ -1,5 +1,7 @@
 package utils
 
+import "os"
+
 const (
 	RECODE_OK         = "0"
 	RECODE_DBERR      = "4001"
@@ -48,4 +50,10 @@ func RecodeText(code string) string {
 		return str
 	}
 	return recodeText[RECODE_UNKNOWERR]
+}
+func CheckFileExist(file string) bool {
+	if _, err := os.Stat(file); os.IsNotExist(err) {
+		return false
+	}
+	return true
 }
