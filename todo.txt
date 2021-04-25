@@ -4,3 +4,4 @@
 4. websocket for chatting*--first can use the luo's html, then upgrade to a websocket is an option
 5. change the avastar during the dialog
 6. session id show on the web page and only the first 5 bit?
+7. can micro has internal function to support send a GPB message to a fixed IP address ?

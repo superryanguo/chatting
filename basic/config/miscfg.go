@@ -6,6 +6,8 @@ type MisConfig interface {
 	GetMailPass() string
 	GetDialogPath() string
 	GetDialogPrefix() string
+	GetMLAddr() string
+	GetMLPort() string
 }
 
 type defaultMiscConfig struct {
@@ -14,8 +16,16 @@ type defaultMiscConfig struct {
 	MailPass     string `json:"mailpass"`
 	DialogPath   string `json:"dialogpath"`
 	DialogPrefix string `json:"dialogprefix"`
+	MLAddr       string `json:"mladdr"`
+	MLPort       string `json:"mlport"`
 }
 
+func (d defaultMiscConfig) GetMLAddr() string {
+	return d.MLAddr
+}
+func (d defaultMiscConfig) GetMLPort() string {
+	return d.MLPort
+}
 func (d defaultMiscConfig) GetImageAddr() string {
 	return d.ImageAddr
 }

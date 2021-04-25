@@ -20,3 +20,7 @@ test:
 .PHONY: docker
 docker:
 	docker build . -t websrv-service:latest
+
+.PHONY: mache
+mache:
+	protoc --go_out=. proto/mache/mache.proto

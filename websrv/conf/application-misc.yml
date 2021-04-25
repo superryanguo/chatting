@@ -5,3 +5,5 @@ app:
     mailpass: testtrest
     dialogpath: ./dialog/
     dialogprefix: dlg
+    mladdr: 127.0.0.1 
+    mlport: 9990
