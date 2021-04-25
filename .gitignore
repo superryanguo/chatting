@@ -8,6 +8,7 @@
 *.swo
 
 websrv
+websrv/dialog/*
 website/website
 web-srv/web-srv
 websrv/websrv
