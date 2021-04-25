@@ -3,5 +3,5 @@ app:
     imageaddr: 127.0.0.1 
     mailuser: test
     mailpass: testtrest
-    dialogpath: ./dialog
+    dialogpath: ./dialog/
     dialogprefix: dlg

@@ -10,7 +10,6 @@ import (
 	log "github.com/micro/go-micro/v2/logger"
 
 	"github.com/go-redis/redis"
-	"github.com/google/uuid"
 	"github.com/superryanguo/chatting/basic/cache"
 	"github.com/superryanguo/chatting/basic/config"
 	"github.com/superryanguo/chatting/models"
@@ -29,6 +28,9 @@ func Init() {
 	dialogPath = config.GetMisconfig().GetDialogPath()
 	dialogPrefix = config.GetMisconfig().GetDialogPrefix()
 	_ = CreateOneUser()
+	if err := utils.CreateDir(dialogPath); err != nil {
+		log.Info("Dir not exist or fail to create", err.Error())
+	}
 }
 
 func CreateOneUser() error {
@@ -64,7 +66,7 @@ func GetSessionProfile(sid string) (path string, err error) {
 			log.Debug("GetSessionProfile->no this sid in cache redis.Nil")
 			d.SessionId = sid
 			d.UserID = models.Userid //TODO: make this one select from the db
-			d.Path = dialogPath + dialogPrefix + uuid.New().String()
+			d.Path = dialogPath + dialogPrefix + sid
 			log.Debug("GetSessionProfile->create new dialog:", d)
 			dj, err := json.Marshal(d)
 			if err != nil {
@@ -74,6 +76,13 @@ func GetSessionProfile(sid string) (path string, err error) {
 			err = cache.SaveToCache(sid, dj)
 			if err != nil {
 				log.Debug("GetSessionProfile->redis save failure:", err.Error())
+				return "", err
+			}
+			//save to database
+			//TODO: check the dialog exist first is better? then update
+			err = models.GetGorm().Debug().Create(&d).Error
+			if err != nil {
+				log.Debug("GetSessionProfile->fail to insert a dialog to db", err.Error())
 				return "", err
 			}
 			return d.Path, nil
@@ -95,6 +104,7 @@ func (e *Websrv) Chat(ctx context.Context, req *websrv.ChatRequest, rsp *websrv.
 	log.Info("Websrv->Chat func in...")
 	rsp.Errno = utils.RECODE_OK
 	rsp.Errmsg = utils.RecodeText(rsp.Errno)
+	//TODO: get a reply from ML, hardcode one now
 	rsp.Reply = "hardcode reply for ses" + req.SessionId
 
 	path, err := GetSessionProfile(req.SessionId)
@@ -103,20 +113,23 @@ func (e *Websrv) Chat(ctx context.Context, req *websrv.ChatRequest, rsp *websrv.
 		rsp.Errmsg = utils.RecodeText(rsp.Errno)
 		return nil
 	}
+	log.Debug("Get the path=", path)
 
 	var output []string
 	output = append(output, fmt.Sprintf("User: %s\n", req.Text))
 	output = append(output, fmt.Sprintf("Robot: %s\n", rsp.Reply))
 	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		rsp.Errno = utils.RECODE_DATAERR
+		log.Debug("Chat->File open error:", err.Error())
+		rsp.Errno = utils.RECODE_IOERR
 		rsp.Errmsg = utils.RecodeText(rsp.Errno)
 		return nil
 	}
 	defer f.Close()
 
 	if _, err := f.WriteString(strings.Join(output, "")); err != nil {
-		rsp.Errno = utils.RECODE_DATAERR
+		log.Debug("Chat->File write error:", err.Error())
+		rsp.Errno = utils.RECODE_IOERR
 		rsp.Errmsg = utils.RecodeText(rsp.Errno)
 		return nil
 	}

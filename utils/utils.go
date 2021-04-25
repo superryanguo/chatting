@@ -57,3 +57,17 @@ func CheckFileExist(file string) bool {
 	}
 	return true
 }
+
+func CreateDir(dir string) error {
+	s, err := os.Stat(dir)
+	if err != nil {
+		return err
+	}
+	if !s.IsDir() {
+		err = os.Mkdir(dir, 755)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
