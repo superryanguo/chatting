@@ -10,10 +10,13 @@ import (
 	log "github.com/micro/go-micro/v2/logger"
 
 	"github.com/go-redis/redis"
+	"github.com/golang/protobuf/proto"
 	"github.com/superryanguo/chatting/basic/cache"
 	"github.com/superryanguo/chatting/basic/config"
+	"github.com/superryanguo/chatting/maches"
 	"github.com/superryanguo/chatting/models"
 	"github.com/superryanguo/chatting/utils"
+	mache "github.com/superryanguo/chatting/websrv/proto/mache"
 	websrv "github.com/superryanguo/chatting/websrv/proto/websrv"
 )
 
@@ -22,15 +25,18 @@ type Websrv struct{}
 var (
 	dialogPath   string
 	dialogPrefix string
+	macheEndAddr string
 )
 
 func Init() {
 	dialogPath = config.GetMisconfig().GetDialogPath()
 	dialogPrefix = config.GetMisconfig().GetDialogPrefix()
+	macheEndAddr = config.GetMisconfig().GetMLAddr() + config.GetMisconfig().GetMLPort()
 	_ = CreateOneUser()
 	if err := utils.CreateDir(dialogPath); err != nil {
 		log.Info("Dir not exist or fail to create", err.Error())
 	}
+	go maches.GetMache().RunClient(macheEndAddr)
 }
 
 func CreateOneUser() error {
@@ -100,12 +106,45 @@ func GetSessionProfile(sid string) (path string, err error) {
 	return d.Path, nil
 
 }
+
+func RetrieveAnswer(id, ask string) (string, error) {
+	var as mache.ChatAnswer
+	ak := mache.ChatAsk{
+		SessionId: id,
+		Query:     ask,
+	}
+	data, err := proto.Marshal(&ak)
+	if err != nil {
+		log.Debug("protoc marshal err=", err.Error())
+		return "", err
+	}
+	maches.GetClientChan() <- data
+
+	select {
+	case msg := <-maches.GetClientChan():
+		err = proto.Unmarshal(msg, &as)
+		if err != nil {
+			log.Debug("protoc unmarshal err=", err.Error())
+			return "", err
+		}
+	}
+	return as.Reply, nil
+}
+
 func (e *Websrv) Chat(ctx context.Context, req *websrv.ChatRequest, rsp *websrv.ChatResponse) error {
 	log.Info("Websrv->Chat func in...")
+	var err error
 	rsp.Errno = utils.RECODE_OK
 	rsp.Errmsg = utils.RecodeText(rsp.Errno)
 	//TODO: get a reply from ML, hardcode one now
-	rsp.Reply = "hardcode reply for ses" + req.SessionId
+	//rsp.Reply = "hardcode reply for ses" + req.SessionId
+	rsp.Reply, err = RetrieveAnswer(req.SessionId, req.Text)
+	if err != nil {
+		log.Debug("Chat->RetrieveAnswer error:", err.Error())
+		rsp.Errno = utils.RECODE_IOERR
+		rsp.Errmsg = utils.RecodeText(rsp.Errno)
+		return nil
+	}
 
 	path, err := GetSessionProfile(req.SessionId)
 	if err != nil {
