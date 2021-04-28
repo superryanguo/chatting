@@ -10,6 +10,7 @@
 websrv/dialog/*
 website/website
 maches/testmache/testmache
+maches/testclient/testclient
 web-srv/web-srv
 websrv/websrv
 brain/brain

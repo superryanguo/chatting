@@ -7,7 +7,7 @@ type MisConfig interface {
 	GetDialogPath() string
 	GetDialogPrefix() string
 	GetMLAddr() string
-	GetMLPort() string
+	GetMLPort() int
 }
 
 type defaultMiscConfig struct {
@@ -17,15 +17,17 @@ type defaultMiscConfig struct {
 	DialogPath   string `json:"dialogpath"`
 	DialogPrefix string `json:"dialogprefix"`
 	MLAddr       string `json:"mladdr"`
-	MLPort       string `json:"mlport"`
+	MLPort       int    `json:"mlport"`
 }
 
 func (d defaultMiscConfig) GetMLAddr() string {
 	return d.MLAddr
 }
-func (d defaultMiscConfig) GetMLPort() string {
+
+func (d defaultMiscConfig) GetMLPort() int {
 	return d.MLPort
 }
+
 func (d defaultMiscConfig) GetImageAddr() string {
 	return d.ImageAddr
 }

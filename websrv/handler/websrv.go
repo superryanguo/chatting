@@ -3,8 +3,10 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	log "github.com/micro/go-micro/v2/logger"
@@ -31,7 +33,8 @@ var (
 func Init() {
 	dialogPath = config.GetMisconfig().GetDialogPath()
 	dialogPrefix = config.GetMisconfig().GetDialogPrefix()
-	macheEndAddr = config.GetMisconfig().GetMLAddr() + config.GetMisconfig().GetMLPort()
+	macheEndAddr = config.GetMisconfig().GetMLAddr() + ":"
+	macheEndAddr += strconv.Itoa(config.GetMisconfig().GetMLPort())
 	_ = CreateOneUser()
 	if err := utils.CreateDir(dialogPath); err != nil {
 		log.Info("Dir not exist or fail to create", err.Error())
@@ -118,10 +121,16 @@ func RetrieveAnswer(id, ask string) (string, error) {
 		log.Debug("protoc marshal err=", err.Error())
 		return "", err
 	}
-	maches.GetClientChan() <- data
+	log.Debug("RetrieveAnswer sending the msg:", data)
+	maches.GetClientChanRcv() <- data
 
 	select {
-	case msg := <-maches.GetClientChan():
+	case msg, ok := <-maches.GetClientChanSed():
+		if !ok {
+			log.Debug("clientChanSed closed")
+			return "", errors.New("clientChanSed closed")
+		}
+		log.Debug("RetrieveAnswer receive the msg:", msg)
 		err = proto.Unmarshal(msg, &as)
 		if err != nil {
 			log.Debug("protoc unmarshal err=", err.Error())
