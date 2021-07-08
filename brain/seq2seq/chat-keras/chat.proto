@@ -1,0 +1,14 @@
+syntax = "proto3";
+    
+//package micro.chatting.mache;
+    
+message ChatAsk {
+    string SessionId = 1;
+    string Query = 2;
+}
+    
+message ChatAnswer {
+    string SessionId = 1; 
+    string Reply = 2;
+}
+    
