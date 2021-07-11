@@ -197,8 +197,8 @@ class GPBHandler(BaseRequestHandler):
         print("chat_data: ", chat_data)
 
 if __name__=="__main__":
-    ip = "127.0.0.1"
-    HOST,PORT = ip,6789
+    ip = "0.0.0.0"
+    HOST,PORT = ip,8099
     print("server@" + ip + ":start")
     TCPServer.allow_reuse_address = True
     with TCPServer((HOST,PORT), GPBHandler) as server:

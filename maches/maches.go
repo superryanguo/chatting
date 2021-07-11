@@ -51,6 +51,7 @@ func GetServerChanRcv() chan []byte {
 	return mymache.serverChanRcv
 }
 
+//TODO: add ctx handling to close the goroutine
 func (m *Mache) RunClient(addr string) {
 	var conn net.Conn
 	var err error

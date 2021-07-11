@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	"github.com/superryanguo/chatting/maches"
 )
 
@@ -12,4 +14,5 @@ const (
 func main() {
 	go maches.GetMache().RunClient(Addr)
 	maches.GetClientChanRcv() <- ([]byte)("hello")
+	time.Sleep(5 * time.Second)
 }

@@ -33,6 +33,21 @@ services:
     ports:
       - "3306:3306"
 
+  aibrain:
+    image: gcr.io/kaggle-images/python:latest
+    restart: always
+    container_name: "aibrain"
+    #environment:
+      #MYSQL_PASS: 'yourpassword'
+    volumes:
+      - "./brain/seq2seq/gpbhandler/TCP-Client-Server-Python3:/tf"
+    networks:
+      - node-net
+    ports:
+      - "8099:8099"
+    command: python /tf/server.py
+    #command: maches/testmache/testmache
+
 networks:
   node-net:
     name: node-net
