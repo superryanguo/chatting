@@ -14,6 +14,7 @@ maches/testclient/testclient
 web-srv/web-srv
 websrv/websrv
 brain/brain
+brain/seq2seq/chat-keras/outModel/*
 db/*
 # Test binary, built with `go test -c`
 *.test
