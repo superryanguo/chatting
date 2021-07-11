@@ -1,1 +1,1 @@
-cd /tf/brain/seq2seq/chat-keras && python ./chatbot.py
+cd /tf && python ./chatbot.py

@@ -35,18 +35,18 @@ services:
 
   aibrain:
     image: gcr.io/kaggle-images/python:latest
-    restart: always
+    #restart: always
     container_name: "aibrain"
     #environment:
       #MYSQL_PASS: 'yourpassword'
     volumes:
-      - "brain/seq2seq/chat-keras:/tf"
+      - "./brain/seq2seq/chat-keras:/tf"
     networks:
       - node-net
     ports:
       - "8099:8099"
-    #command: python /tf/server.py
-    entrypoint: /tf/start.sh
+    command: bash -c "cd /tf && python ./chatbot.py"
+    #entrypoint: /tf/start.sh
 
 networks:
   node-net:
