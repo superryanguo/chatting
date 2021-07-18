@@ -7,6 +7,9 @@ from tensorflow.python.keras import backend as K
 import pickle
 import numpy as np
 import re
+import logging
+import sys
+#sys.path.append("../proto/")
 from AttentionLayer import AttentionLayer
 
 with open('dic.pkl', 'rb') as f:
@@ -31,7 +34,6 @@ def clean_text(txt):
     txt = re.sub(r"can't", "can not", txt)
     txt = re.sub(r"[^\w\s]", "", txt)
     return txt
-
 
 
 attn_layer = AttentionLayer()
@@ -131,26 +133,24 @@ def ai_response(query):
                 stat = [ h , c ]
 
             reponse="ChatBot: "+ decoded_translation
-            # print("chatbot attention : ", decoded_translation )
-            # print("==============================================")
+            logging.debug("chatbot attention : ", decoded_translation )
+            # logging.debug("==============================================")
 
         except:
             reponse="sorry didn't got you , please type again :( "
-            # print("sorry didn't got you , please type again :( ")
+            logging.debug("sorry didn't got you , please type again :( ")
 
         return reponse
 
-# print("##########################################")
-# print("#       start chatting ver. 1.0          #")
-# print("##########################################")
+# logging.debug("##########################################")
+# logging.debug("#       start chatting ver. 1.0          #")
+# logging.debug("##########################################")
 # prepro1 = ""
 # while prepro1 != 'q':
         # prepro1 = input("you : ")
-        # print(ai_response(prepro1))
+        # logging.debug(ai_response(prepro1))
 
 #add the server handling for GPB message
-import sys
-#sys.path.append("../proto/")
 
 from socketserver import BaseRequestHandler, TCPServer
 import chat_pb2 as chat
@@ -160,15 +160,21 @@ chat_data = {}
 
 class GPBHandler(BaseRequestHandler):
     def handle(self):
+        log = logging.getLogger()
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        stdout_handler = logging.StreamHandler(sys.stdout)
+        stdout_handler.setLevel(logging.DEBUG)
+        stdout_handler.setFormatter(formatter)
+        log.addHandler(stdout_handler)
 
         # receive client data
         data=self.request.recv(1024)
-        # print(b"Received:"+data)
+        # logging.debug(b"Received:"+data)
 
         ask = chat.ChatAsk()
-        print(time.strftime("%Y-%m-%d-%H:%M:%S", time.localtime()), "server receive OK:",ask.ParseFromString(data))
-        print("  SessionId: ", ask.SessionId)
-        print("  Query: ", ask.Query)
+        logging.info(time.strftime("%Y-%m-%d-%H:%M:%S", time.localtime()), "server receive OK:",ask.ParseFromString(data))
+        logging.info("  SessionId: ", ask.SessionId)
+        logging.info("  Query: ", ask.Query)
 
         # reply
         answer = chat.ChatAnswer()
@@ -184,9 +190,9 @@ class GPBHandler(BaseRequestHandler):
         # else :
             # answer.Reply =  "Hello."
 
-        print(time.strftime("%Y-%m-%d-%H:%M:%S", time.localtime()), "server reply ok:",self.request.sendall(answer.SerializeToString()))
-        print("  SessionId: ", answer.SessionId)
-        print("  Reply: ", answer.Reply)
+        logging.debug(time.strftime("%Y-%m-%d-%H:%M:%S", time.localtime()), "server reply ok:",self.request.sendall(answer.SerializeToString()))
+        logging.debug("  SessionId: ", answer.SessionId)
+        logging.debug("  Reply: ", answer.Reply)
 
         # save 'ask' and 'answer'word_freq.
         if chat_data.get(ask.SessionId) is not None:
@@ -194,12 +200,20 @@ class GPBHandler(BaseRequestHandler):
         else :
             chat_data[ask.SessionId] = [("Ask:"+ ask.Query, "Ans:"+ answer.Reply)]
         # chat_data.append(chat_data_ele)
-        print("chat_data: ", chat_data)
+        logging.debug("chat_data: ", chat_data)
 
 if __name__=="__main__":
     ip = "0.0.0.0"
     HOST,PORT = ip,8099
-    print("server@" + ip + ":start")
+    log = logging.getLogger()
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    stdout_handler = logging.StreamHandler(sys.stdout)
+    stdout_handler.setLevel(logging.DEBUG)
+    stdout_handler.setFormatter(formatter)
+    log.addHandler(stdout_handler)
+
+    logging.info("server@" + ip + ":start")
+
     TCPServer.allow_reuse_address = True
     with TCPServer((HOST,PORT), GPBHandler) as server:
         server.serve_forever()

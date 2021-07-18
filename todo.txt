@@ -6,5 +6,5 @@
 6. session id show on the web page and only the first 5 bit?
 7. can micro has internal function to support send a GPB message to a fixed IP address ?
 8. we should save the dialog into a file, just as the picture url in the mysql data, so make a filepath or filename in the data model
-9. make the python docker can print some log, use logging package?!
+9. make the python docker can print some log, use logging package?! --done
 10. can't send more than 1 message, need to fix it
