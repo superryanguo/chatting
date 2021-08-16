@@ -160,21 +160,23 @@ chat_data = {}
 
 class GPBHandler(BaseRequestHandler):
     def handle(self):
-        log = logging.getLogger()
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        stdout_handler = logging.StreamHandler(sys.stdout)
-        stdout_handler.setLevel(logging.DEBUG)
-        stdout_handler.setFormatter(formatter)
-        log.addHandler(stdout_handler)
+        # log = logging.getLogger()
+        # formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        # stdout_handler = logging.StreamHandler(sys.stdout)
+        # stdout_handler.setLevel(logging.DEBUG)
+        # stdout_handler.setFormatter(formatter)
+        # log.addHandler(stdout_handler)
 
         # receive client data
+       # while(1):
         data=self.request.recv(1024)
-        # logging.debug(b"Received:"+data)
+        logging.info("Received:"+str(data))
 
         ask = chat.ChatAsk()
-        logging.info(time.strftime("%Y-%m-%d-%H:%M:%S", time.localtime()), "server receive OK:",ask.ParseFromString(data))
-        logging.info("  SessionId: ", ask.SessionId)
-        logging.info("  Query: ", ask.Query)
+        ask.ParseFromString(data)
+        # print(time.strftime("%Y-%m-%d-%H:%M:%S", time.localtime()), "server receive OK:",ask.ParseFromString(data))
+        logging.info("  SessionId: "+ ask.SessionId)
+        logging.info("  Query: "+ ask.Query)
 
         # reply
         answer = chat.ChatAnswer()
@@ -190,9 +192,10 @@ class GPBHandler(BaseRequestHandler):
         # else :
             # answer.Reply =  "Hello."
 
-        logging.debug(time.strftime("%Y-%m-%d-%H:%M:%S", time.localtime()), "server reply ok:",self.request.sendall(answer.SerializeToString()))
-        logging.debug("  SessionId: ", answer.SessionId)
-        logging.debug("  Reply: ", answer.Reply)
+        # print(time.strftime("%Y-%m-%d-%H:%M:%S", time.localtime()), "server reply ok:", self.request.sendall(answer.SerializeToString()))
+        self.request.sendall(answer.SerializeToString())
+        logging.info("  SessionId: "+ answer.SessionId)
+        logging.info("  Reply: "+ answer.Reply)
 
         # save 'ask' and 'answer'word_freq.
         if chat_data.get(ask.SessionId) is not None:
@@ -200,7 +203,7 @@ class GPBHandler(BaseRequestHandler):
         else :
             chat_data[ask.SessionId] = [("Ask:"+ ask.Query, "Ans:"+ answer.Reply)]
         # chat_data.append(chat_data_ele)
-        logging.debug("chat_data: ", chat_data)
+        logging.info("chat_data: ", chat_data)
 
 if __name__=="__main__":
     ip = "0.0.0.0"

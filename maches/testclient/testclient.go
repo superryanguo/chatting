@@ -1,9 +1,13 @@
 package main
 
 import (
-	"time"
+	"fmt"
 
+	log "github.com/micro/go-micro/v2/logger"
+
+	"github.com/golang/protobuf/proto"
 	"github.com/superryanguo/chatting/maches"
+	mache "github.com/superryanguo/chatting/websrv/proto/mache"
 )
 
 //For test purpose
@@ -13,6 +17,36 @@ const (
 
 func main() {
 	go maches.GetMache().RunClient(Addr)
-	maches.GetClientChanRcv() <- ([]byte)("hello")
-	time.Sleep(5 * time.Second)
+	var as mache.ChatAnswer
+	ak := mache.ChatAsk{
+		SessionId: "123123",
+		Query:     "how are you",
+	}
+	//maches.GetClientChanRcv() <- ([]byte)("hello")
+	data, err := proto.Marshal(&ak)
+	if err != nil {
+		log.Debug("protoc marshal err=", err.Error())
+		return
+	}
+	log.Debug("sending... the msg:", data)
+	maches.GetClientChanRcv() <- data
+
+	select {
+	case msg, ok := <-maches.GetClientChanSed():
+		if !ok {
+			log.Debug("clientChanSed closed")
+			return
+		}
+		log.Debug("RetrieveAnswer receive the msg:", msg)
+		err = proto.Unmarshal(msg, &as)
+		if err != nil {
+			log.Debug("protoc unmarshal err=", err.Error())
+			return
+		}
+		log.Debug("Get the answer=", as.Reply, ", id=", as.SessionId)
+
+	}
+
+	//time.Sleep(5 * time.Second)
+	fmt.Println("exiting...")
 }
