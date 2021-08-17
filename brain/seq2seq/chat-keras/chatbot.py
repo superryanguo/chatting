@@ -168,42 +168,45 @@ class GPBHandler(BaseRequestHandler):
         # log.addHandler(stdout_handler)
 
         # receive client data
-       # while(1):
+      while(1):
         data=self.request.recv(1024)
-        logging.info("Received:"+str(data))
-
-        ask = chat.ChatAsk()
-        ask.ParseFromString(data)
-        # print(time.strftime("%Y-%m-%d-%H:%M:%S", time.localtime()), "server receive OK:",ask.ParseFromString(data))
-        logging.info("  SessionId: "+ ask.SessionId)
-        logging.info("  Query: "+ ask.Query)
-
-        # reply
-        answer = chat.ChatAnswer()
-        if ask.SessionId.isdigit():
-            answer.SessionId = ask.SessionId
+        if len(data) == 0:
+            continue
         else:
-            answer.SessionId = "?"
+            logging.info("Received:"+str(len(data))+"(bytes): "+str(data))
 
-        answer.Reply =  ai_response(ask.Query)
+            ask = chat.ChatAsk()
+            ask.ParseFromString(data)
+            # print(time.strftime("%Y-%m-%d-%H:%M:%S", time.localtime()), "server receive OK:",ask.ParseFromString(data))
+            logging.info("  SessionId: "+ ask.SessionId)
+            logging.info("  Query: "+ ask.Query)
 
-        # if ask.Query == "How are you?" :
-            # answer.Reply =  "I'm Fine. Hope you have a good day!"
-        # else :
-            # answer.Reply =  "Hello."
+            # reply
+            answer = chat.ChatAnswer()
+            if ask.SessionId.isdigit():
+                answer.SessionId = ask.SessionId
+            else:
+                answer.SessionId = "?"
 
-        # print(time.strftime("%Y-%m-%d-%H:%M:%S", time.localtime()), "server reply ok:", self.request.sendall(answer.SerializeToString()))
-        self.request.sendall(answer.SerializeToString())
-        logging.info("  SessionId: "+ answer.SessionId)
-        logging.info("  Reply: "+ answer.Reply)
+            answer.Reply =  ai_response(ask.Query)
 
-        # save 'ask' and 'answer'word_freq.
-        if chat_data.get(ask.SessionId) is not None:
-            chat_data[ask.SessionId] = chat_data.get(ask.SessionId)+[("Ask:"+ ask.Query, "Ans:"+ answer.Reply)]
-        else :
-            chat_data[ask.SessionId] = [("Ask:"+ ask.Query, "Ans:"+ answer.Reply)]
-        # chat_data.append(chat_data_ele)
-        logging.info("chat_data: ", chat_data)
+            # if ask.Query == "How are you?" :
+                # answer.Reply =  "I'm Fine. Hope you have a good day!"
+            # else :
+                # answer.Reply =  "Hello."
+
+            # print(time.strftime("%Y-%m-%d-%H:%M:%S", time.localtime()), "server reply ok:", self.request.sendall(answer.SerializeToString()))
+            self.request.sendall(answer.SerializeToString())
+            logging.info("  SessionId: "+ answer.SessionId)
+            logging.info("  Reply: "+ answer.Reply)
+
+            # save 'ask' and 'answer'word_freq.
+            if chat_data.get(ask.SessionId) is not None:
+                chat_data[ask.SessionId] = chat_data.get(ask.SessionId)+[("Ask:"+ ask.Query, "Ans:"+ answer.Reply)]
+            else :
+                chat_data[ask.SessionId] = [("Ask:"+ ask.Query, "Ans:"+ answer.Reply)]
+            # chat_data.append(chat_data_ele)
+            # logging.info("chat_data: ", chat_data) #TODO: Not work for dict?!
 
 if __name__=="__main__":
     ip = "0.0.0.0"
