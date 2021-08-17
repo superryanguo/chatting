@@ -132,7 +132,8 @@ def ai_response(query):
                 empty_target_seq[ 0 , 0 ] = sampled_word_index
                 stat = [ h , c ]
 
-            reponse="ChatBot: "+ decoded_translation
+            # reponse="ChatBot: "+ decoded_translation
+            reponse= decoded_translation
             logging.debug("chatbot attention : ", decoded_translation )
             # logging.debug("==============================================")
 
